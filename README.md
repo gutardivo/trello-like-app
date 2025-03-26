@@ -65,7 +65,9 @@ Original repo is in https://github.com/tonycheang/todo-backend-express-knex
     > You'll need the server to serve the frontend build if
     > you want to host the entire project somewhere.
 
-- Create Firebase Authentication and save the credentials inside config folder
+- Create Firebase Authentication and save the credentials inside server/config folder
+
+- Then create SDK for web and update the Firebase Config in client/lib/firebase.js
 
 UPT: Update file
 DEL: Delete some feature

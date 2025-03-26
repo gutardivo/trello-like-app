@@ -3,7 +3,7 @@ const todos = require("./database/todo-queries.js");
 const users = require("./database/user-queries.js");
 const todosAssignees = require("./database/todos-assignees-queries.js");
 
-const auth = require("../lib/firebase");
+const auth = require("./lib/firebase.js");
 
 function createToDo(req, data) {
   const protocol = req.protocol,

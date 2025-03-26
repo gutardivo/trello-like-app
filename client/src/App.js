@@ -186,7 +186,7 @@ class App extends Component {
 
     return (
       <div className="App min-h-screen bg-yellow-50/75 p-6">
-        <div className="max-w-7xl mx-auto">
+        <div className="max-w-7xl mx-auto min-h-full">
           <div className="flex justify-between items-center mb-8">
             <h2 className="text-3xl font-semibold">{user}'s to-do list</h2>
             <button
@@ -201,7 +201,9 @@ class App extends Component {
             {["To-Do", "Doing", "Done"].map((statusText, idx) => (
               <div
                 key={idx}
-                className={bgColors[idx] + " p-4 rounded-lg shadow-md"}
+                className={
+                  bgColors[idx] + " p-4 rounded-lg shadow-md min-h-full"
+                }
               >
                 <h3 className={"text-2xl font-bold mb-4 " + textColors[idx]}>
                   {statusText}
