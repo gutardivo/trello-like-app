@@ -1,20 +1,23 @@
 import { useState } from "react";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { ToastContainer, toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 const auth = require("./lib/firebase");
 
-export default function Login() {
+export default function LoginPage() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
-  const [isSignUp, setIsSignUp] = useState(true);
+  const [isSignUp, setIsSignUp] = useState(false);
+  const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
       await signInWithEmailAndPassword(auth, email, password);
       toast.success("Login successful!");
+      navigate("/");
     } catch (err) {
       setError(err.message);
     }
@@ -53,7 +56,7 @@ export default function Login() {
           {isSignUp ? "Sign Up" : "Login"}
         </h2>
         <button
-          className="rounded-md p-4"
+          className="rounded-md p-4 w-full text-center"
           onClick={() => setIsSignUp(!isSignUp)}
         >
           Switch to {isSignUp ? "Login" : "Sign Up"}
@@ -84,19 +87,21 @@ export default function Login() {
             onChange={(e) => setPassword(e.target.value)}
           />
           {error && <p className="text-red-500 text-sm">{error}</p>}
-
-          <button
-            className="w-full bg-blue-500 text-white py-2 rounded mt-2"
-            onClick={handleLogin}
-          >
-            Login
-          </button>
-          <button
-            className="w-full bg-green-500 text-white py-2 rounded mt-2"
-            onClick={handleSignUp}
-          >
-            Sign Up
-          </button>
+          {isSignUp ? (
+            <button
+              className="w-full bg-green-500 text-white py-2 rounded mt-2"
+              onClick={handleSignUp}
+            >
+              Sign Up
+            </button>
+          ) : (
+            <button
+              className="w-full bg-blue-500 text-white py-2 rounded mt-2"
+              onClick={handleLogin}
+            >
+              Login
+            </button>
+          )}
         </form>
       </div>
       <ToastContainer />

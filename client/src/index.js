@@ -3,6 +3,7 @@ import ReactDOM from "react-dom/client"; // Use the 'client' from react-dom for 
 import "./index.css";
 import App from "./App";
 import * as serviceWorker from "./serviceWorker";
+import { BrowserRouter } from "react-router-dom";
 
 // Create a root using ReactDOM.createRoot
 const root = ReactDOM.createRoot(document.getElementById("root"));
@@ -10,7 +11,9 @@ const root = ReactDOM.createRoot(document.getElementById("root"));
 // Render the App component inside the root
 root.render(
   <React.StrictMode>
-    <App />
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>
   </React.StrictMode>
 );
 
