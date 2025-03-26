@@ -24,3 +24,5 @@ node_modules
 ./client/npm-debug.log*
 ./client/yarn-debug.log*
 ./client/yarn-error.log*
+
+./config/todo-auth-5ce3e-firebase-adminsdk-fbsvc-4ae1205cae
