@@ -91,10 +91,6 @@ async function deleteAssign(req, res) {
   const userId = req.params["user_id"];
   const todoId = req.params["todo_id"];
 
-  if (!userId || !todoId) {
-    return res.status(404).json({ error: "Todo not found" });
-  }
-
   try {
     const result = await todosAssignees.delete(userId, todoId);
 
