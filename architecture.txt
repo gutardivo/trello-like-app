@@ -1,0 +1,33 @@
+// Database Architecture
+
+todos {
+    id serial pk
+    title string
+    status int (todo: 0, doing: 1 or done: 2)
+    order int
+    created_at timestamp
+}
+
+users {
+    id serial pk
+    name string
+    email string
+    created_at timestamp
+}
+
+todos_assignees {
+    id serial pk
+    user_id int
+    todo_id int
+    assigned_at timestamp
+}
+
+// APIs Endpoints
+
+create-user POST (create in firebase and if succeed, creates in the postgresql db)
+assign-todo POST
+delete-assignee DELETE
+
+// Frontend (Firebase)
+Login
+Reset Password
