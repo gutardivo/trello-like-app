@@ -66,3 +66,7 @@ Original repo is in https://github.com/tonycheang/todo-backend-express-knex
     > you want to host the entire project somewhere.
 
 - Create Firebase Authentication and save the credentials inside config folder
+
+UPT: Update file
+DEL: Delete some feature
+ADD: Add some file or feature
