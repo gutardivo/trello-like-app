@@ -1,16 +1,16 @@
-# todo-backend-express-knex
+# trello-like-app
 
 This is an implementation of [Todo-Backend](http://todobackend.com/) using Node and Express for the server, Knex for database migrations and query building, and some ES6+ features such as async/await. By default, this project configures Knex to save to PostgreSQL.
 
-A [production instance](https://trello-like-app-five.vercel.app/) is running on Vercel.
-
 Bonus features include a simple frontend boostrapped with create-react-app and the todo-backend specification tests transcribed for Jest--a quick full-stack starter pack.
+
+Original repo is in https://github.com/tonycheang/todo-backend-express-knex
 
 ## Installation
 
 1. Clone this repository.
 
-    `git clone git@github.com:tonycheang/todo-backend-express-knex.git`
+    `git clone git@github.com:gutardivo/trello-like-app.git`
 
 2. Install dependencies.
 

@@ -26,7 +26,7 @@ todos_assignees {
 
 create-user POST (create in firebase and if succeed, creates in the postgresql db)
 assign-todo POST
-delete-assignee DELETE
+delete-assign DELETE
 
 // Frontend (Firebase)
 Login
