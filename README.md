@@ -1,11 +1,8 @@
-> [!WARNING]
-> I implemented this for an interview once ages ago, but now it's unmaintained.
-
 # todo-backend-express-knex
 
 This is an implementation of [Todo-Backend](http://todobackend.com/) using Node and Express for the server, Knex for database migrations and query building, and some ES6+ features such as async/await. By default, this project configures Knex to save to PostgreSQL.
 
-A [production instance](https://todo-backend-express-knex.herokuapp.com/) is running on Heroku.
+A [production instance](https://trello-like-app-five.vercel.app/) is running on Vercel.
 
 Bonus features include a simple frontend boostrapped with create-react-app and the todo-backend specification tests transcribed for Jest--a quick full-stack starter pack.
 
@@ -67,3 +64,5 @@ Bonus features include a simple frontend boostrapped with create-react-app and t
     > Note: The proxied connection will only work locally.
     > You'll need the server to serve the frontend build if
     > you want to host the entire project somewhere.
+
+- Create Firebase Authentication and save the credentials inside config folder
