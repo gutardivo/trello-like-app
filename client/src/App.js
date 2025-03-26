@@ -208,6 +208,7 @@ class App extends Component {
                 </h3>
                 {response
                   .filter((todo) => todo.status === idx)
+                  .sort((a, b) => a.order - b.order)
                   .map((todo) => (
                     <div
                       key={todo.url}
