@@ -5,7 +5,6 @@ import "./App.css";
 
 class App extends Component {
   state = {
-    method: "GET",
     lastRequest: "",
     id: "",
     title: "",
@@ -63,71 +62,39 @@ class App extends Component {
 
   handleSubmit = async (e) => {
     e.preventDefault();
-    let { method, id, title, order, status } = this.state;
+    const { title, order, status } = this.state;
 
-    let request = {
-      method,
-      headers: {
-        "Content-Type": "application/json",
-      },
-    };
+    console.log(title, order, status);
 
-    // Undefined ensures not changing to empty string.
     const body = {
-      title: title ? title : undefined,
+      title: title || undefined,
       order: order ? Number(order) : undefined,
-      status,
+      status: status ?? 0,
     };
 
-    if (method !== "GET") request.body = JSON.stringify(body);
-
-    this.setState({ lastRequest: `${method} at /${id}` });
-    // Code smells, but the setup of todo-backend with get('/') returning a list of todos requires
-    // that we directly hit localhost instead of being able to rely on the proxy.
-    // We can only proxy non-root gets.
-    let response;
-    if (
-      process.env.NODE_ENV === "development" &&
-      method === "GET" &&
-      id === ""
-    ) {
-      response = await fetch("http://localhost:5000/", request);
-    } else {
-      response = await fetch(`/${id}`, { method: "POST", request });
-      if (response.ok) {
-        toast.success("To-do created successfully!");
-        this.setState({ title: "", order: "", status: 0 });
-        this.fetchTodos(); // Refresh list after create
-      } else {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Failed to delete");
-      }
-    }
-
-    const contentType = response.headers.get("content-type");
-
-    let bodyResponse;
-    if (contentType && contentType.includes("application/json")) {
-      bodyResponse = await response.json();
-    } else if (contentType && contentType.includes("text/html")) {
-      bodyResponse = await response.text();
-    }
-
-    if (response.status !== 200) {
-      console.log(bodyResponse);
-      this.setState({
-        response: [{ status: response.status, message: bodyResponse }],
+    try {
+      const response = await fetch(`/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(body),
       });
-      return;
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to create to-do");
+      }
+
+      toast.success("To-do created successfully!");
+
+      this.setState({ title: "", order: "", status: 0 });
+      this.toggleModal();
+      this.fetchTodos();
+    } catch (error) {
+      console.error("Error:", error.message);
+      toast.error(error.message);
     }
-
-    // Ensures format of [{}, {}, {}]
-    if (!Array.isArray(bodyResponse)) bodyResponse = Array(bodyResponse);
-
-    this.setState({ response: bodyResponse, showModal: false });
-  };
-  changeMethod = (event) => {
-    this.setState({ method: event.target.value });
   };
 
   toggleModal = () => {
@@ -177,14 +144,19 @@ class App extends Component {
 
   handleEditSubmit = async (e) => {
     e.preventDefault();
-    const { todoToEdit, title, order, status } = this.state;
+    const { todoToEdit, status } = this.state;
+    const todoToEditId = todoToEdit.url.split("/")[3];
 
-    const response = await fetch(`/${todoToEdit.url.split("/")[3]}`, {
+    const response = await fetch(`/${todoToEditId}`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ title, order, status }),
+      body: JSON.stringify({
+        title: todoToEdit.title,
+        order: todoToEdit.order,
+        status,
+      }),
     });
 
     if (response.status === 200) {
