@@ -76,7 +76,6 @@ async function assignTodo(req, res) {
   try {
     const result = await todosAssignees.create(userId, todoId);
 
-    console.log(userId, todoId, result);
     res.status(201).json({
       message: "Todo assigned successfully",
       assignee: result,
