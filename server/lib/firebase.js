@@ -3,7 +3,7 @@ const path = require("path"); // For resolving the path to the service account f
 
 // Path to your service account JSON file
 const serviceAccount = path.resolve(
-  "../config",
+  "config",
   "./todo-auth-5ce3e-firebase-adminsdk-fbsvc-4ae1205cae.json"
 );
 

@@ -67,7 +67,7 @@ Original repo is in https://github.com/tonycheang/todo-backend-express-knex
 
 - Create Firebase Authentication and save the credentials inside server/config folder
 
-- Then create SDK for web and update the Firebase Config in client/lib/firebase.js
+- Then create SDK for web and update the Firebase Config in client/src/lib/firebase.js
 
 UPT: Update file
 DEL: Delete some feature

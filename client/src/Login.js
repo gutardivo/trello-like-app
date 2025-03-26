@@ -1,10 +1,7 @@
 import { useState } from "react";
-import {
-  signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
-} from "firebase/auth";
-import { auth } from "../lib/firebase";
+import { signInWithEmailAndPassword } from "firebase/auth";
 import { ToastContainer, toast } from "react-toastify";
+const auth = require("./lib/firebase");
 
 export default function Login() {
   const [name, setName] = useState("");
