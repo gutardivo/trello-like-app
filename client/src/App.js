@@ -12,6 +12,7 @@ class App extends Component {
     order: "",
     status: 0,
     response: [],
+    user: "Gustavo",
     showModal: false,
     showDeleteModal: false,
     showEditModal: false,
@@ -178,7 +179,7 @@ class App extends Component {
     e.preventDefault();
     const { todoToEdit, title, order, status } = this.state;
 
-    const response = await fetch(`/${todoToEdit.id}`, {
+    const response = await fetch(`/${todoToEdit.url.split("/")[3]}`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
@@ -202,23 +203,20 @@ class App extends Component {
       order,
       status,
       response,
+      user,
       showDeleteModal,
       showEditModal,
       todoToEdit,
     } = this.state;
 
-    // const columns = [
-    //   { status: 0, label: "To-do" },
-    //   { status: 1, label: "Doing" },
-    //   { status: 2, label: "Done" },
-    // ];
-    // const shouldDisplayModalCreate = method === "POST" || method === "PATCH";
+    const bgColors = ["bg-blue-100", "bg-yellow-100", "bg-green-100"];
+    const textColors = ["text-blue-500", "text-yellow-600", "text-green-500"];
 
     return (
-      <div className="App min-h-screen bg-gray-100 p-6">
+      <div className="App min-h-screen bg-yellow-50/75 p-6">
         <div className="max-w-7xl mx-auto">
           <div className="flex justify-between items-center mb-8">
-            <h2 className="text-3xl font-semibold">Todo Dashboard</h2>
+            <h2 className="text-3xl font-semibold">{user}'s to-do list</h2>
             <button
               onClick={this.toggleModal}
               className="bg-blue-500 text-white p-2 rounded-lg hover:bg-blue-600"
@@ -229,14 +227,19 @@ class App extends Component {
 
           <div className="grid grid-cols-3 gap-6">
             {["To-Do", "Doing", "Done"].map((statusText, idx) => (
-              <div key={idx} className="bg-white p-4 rounded-lg shadow-md">
-                <h3 className="text-xl font-semibold mb-4">{statusText}</h3>
+              <div
+                key={idx}
+                className={bgColors[idx] + " p-4 rounded-lg shadow-md"}
+              >
+                <h3 className={"text-2xl font-bold mb-4 " + textColors[idx]}>
+                  {statusText}
+                </h3>
                 {response
                   .filter((todo) => todo.status === idx)
                   .map((todo) => (
                     <div
-                      key={todo.id}
-                      className="bg-gray-200 p-3 mb-3 rounded-md shadow-sm cursor-pointer"
+                      key={todo.url}
+                      className="bg-white p-3 mb-3 rounded-md shadow-sm cursor-pointer"
                       onClick={() => this.toggleEditModal(todo)}
                     >
                       <h4 className="font-semibold">{todo.title}</h4>
