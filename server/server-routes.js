@@ -71,6 +71,11 @@ async function createUser(req, res) {
   }
 }
 
+async function getAssignedUsers(req, res) {
+  const users = await todosAssignees.get(req.params.todo_id);
+  return res.status(201).json({ users });
+}
+
 async function assignTodo(req, res) {
   const { userId, todoId } = req.body;
   try {
@@ -103,6 +108,11 @@ async function deleteAssign(req, res) {
   }
 }
 
+async function getUsers(req, res) {
+  const allUsers = await users.all();
+  return res.status(201).json({ allUsers });
+}
+
 function addErrorReporting(func, message) {
   return async function (req, res) {
     try {
@@ -130,11 +140,16 @@ const toExport = {
   },
   deleteTodo: { method: deleteTodo, errorMessage: "Could not delete todo" },
   createUser: { method: createUser, errorMessage: "Could not create user" },
+  getAssignedUsers: {
+    method: getAssignedUsers,
+    errorMessage: "Could not get assigned users",
+  },
   assignTodo: { method: assignTodo, errorMessage: "Could not assign todo" },
   deleteAssign: {
     method: deleteAssign,
     errorMessage: "Could not delete assign",
   },
+  getUsers: { method: getUsers, errorMessage: "Could not retrieve users" },
 };
 
 for (let route in toExport) {

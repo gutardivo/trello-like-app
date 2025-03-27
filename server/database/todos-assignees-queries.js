@@ -5,6 +5,11 @@ async function get(id) {
   return results[0];
 }
 
+async function getUsers(todo_id) {
+  const results = await knex("todos_assignees").where({ todo_id });
+  return results[0];
+}
+
 async function create(user_id, todo_id) {
   const results = await knex("todos_assignees")
     .insert({ user_id, todo_id })
@@ -31,6 +36,7 @@ async function del(user_id, todo_id) {
 
 module.exports = {
   get,
+  getUsers,
   create,
   update,
   delete: del,

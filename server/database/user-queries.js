@@ -1,5 +1,9 @@
 const knex = require("./connection.js");
 
+async function all() {
+  return knex("users");
+}
+
 async function get(id) {
   const results = await knex("users").where({ id });
   return results[0];
@@ -25,6 +29,7 @@ async function del(id) {
 }
 
 module.exports = {
+  all,
   get,
   create,
   update,

@@ -15,6 +15,7 @@ const initialState = {
   status: 0,
   response: [],
   user: null,
+  users: [],
   showModal: false,
   showDeleteModal: false,
   showEditModal: false,
@@ -38,6 +39,8 @@ const appReducer = (state, action) => {
       return { ...state, response: action.payload };
     case "SET_USER":
       return { ...state, user: action.payload };
+    case "SET_USERS":
+      return { ...state, users: action.payload };
     case "SET_SHOW_MODAL":
       return { ...state, showModal: action.payload };
     case "SET_SHOW_DELETE_MODAL":
@@ -48,6 +51,8 @@ const appReducer = (state, action) => {
       return { ...state, todoToEdit: action.payload };
     case "SET_TODO_TO_DELETE":
       return { ...state, todoToDelete: action.payload };
+    case "SET_ASSIGNED_USERS":
+      return { ...state, assignedUsers: action.payload };
     case "TOGGLE_MODAL":
       return { ...state, showModal: !state.showModal };
     case "TOGGLE_DELETE_MODAL":
@@ -81,6 +86,7 @@ export default function DashboardPage() {
     });
 
     fetchTodos();
+    // fetchUsers();
 
     return () => {
       if (unsubscribe) {
@@ -96,6 +102,26 @@ export default function DashboardPage() {
       toast.success("Successfully signed out!");
     } catch (error) {
       toast.error("Error signing out: " + error.message);
+    }
+  };
+
+  const fetchUsers = async () => {
+    try {
+      let response;
+      if (process.env.NODE_ENV === "development") {
+        response = await fetch("http://localhost:5000/users");
+      } else {
+        response = await fetch("/users");
+      }
+      if (response.ok) {
+        const data = await response.json();
+        dispatch({ type: "SET_USERS", payload: data });
+      } else {
+        toast.error("Failed to fetch users.");
+      }
+    } catch (error) {
+      console.error("Error fetching users:", error);
+      toast.error("Error fetching users.");
     }
   };
 
@@ -125,7 +151,6 @@ export default function DashboardPage() {
       body = await response.text();
     }
     if (response.status !== 200) {
-      console.log(body);
       dispatch({
         type: "SET_RESPONSE",
         payload: [{ status: response.status, message: body }],
@@ -135,6 +160,83 @@ export default function DashboardPage() {
 
     if (!Array.isArray(body)) body = Array(body);
     dispatch({ type: "SET_RESPONSE", payload: body });
+  };
+
+  useEffect(() => {
+    // Fetch assigned users when a todo is being edited
+    const fetchAssignedUsers = async () => {
+      if (state.showEditModal && state.todoToEdit) {
+        try {
+          const todoId = state.todoToEdit.url.split("/")[3];
+          const response = await fetch(`/todos/${todoId}/assignees`); // Replace with your actual endpoint to get assignees for a todo
+          if (response.ok) {
+            const data = await response.json();
+            dispatch({ type: "SET_ASSIGNED_USERS", payload: data });
+          } else {
+            toast.error("Failed to fetch assigned users.");
+          }
+        } catch (error) {
+          console.error("Error fetching assigned users:", error);
+          toast.error("Error fetching assigned users.");
+        }
+      } else {
+        dispatch({ type: "SET_ASSIGNED_USERS", payload: [] }); // Clear assigned users when modal is closed or no todo is selected
+      }
+    };
+
+    // fetchAssignedUsers();
+  }, [state.showEditModal, state.todoToEdit]);
+
+  const handleAssignUser = async (userId) => {
+    if (!state.todoToEdit) return;
+    const todoId = state.todoToEdit.url.split("/")[3];
+    try {
+      const response = await fetch("/assign-todo", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ userId, todoId }),
+      });
+      if (response.status === 201) {
+        toast.success("User assigned successfully!");
+        dispatch({
+          type: "SET_ASSIGNED_USERS",
+          payload: { ...state.assignedUsers, userId },
+        });
+      } else {
+        const errorData = await response.json();
+        toast.error(errorData.error || "Failed to assign user.");
+      }
+    } catch (error) {
+      console.error("Error assigning user:", error);
+      toast.error("Error assigning user.");
+    }
+  };
+
+  const handleUnassignUser = async (userId) => {
+    if (!state.todoToEdit) return;
+    const todoId = state.todoToEdit.url.split("/")[3];
+    try {
+      const response = await fetch(`/delete-assign/${userId}/${todoId}`, {
+        method: "DELETE",
+      });
+      if (response.status === 201) {
+        toast.success("User unassigned successfully!");
+        dispatch({
+          type: "SET_ASSIGNED_USERS",
+          payload: state.assignedUsers.filter(
+            (assignee) => assignee.userId !== userId
+          ),
+        });
+      } else {
+        const errorData = await response.json();
+        toast.error(errorData.error || "Failed to unassign user.");
+      }
+    } catch (error) {
+      console.error("Error unassigning user:", error);
+      toast.error("Error unassigning user.");
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -382,6 +484,55 @@ export default function DashboardPage() {
                   Submit
                 </button>
               </form>
+
+              {/* Will continue tomorrow (27/03/2025) */}
+              {/* <div className="mt-4">
+                <h4 className="text-lg font-semibold mb-2">Assign Users</h4>
+                <div className="flex flex-wrap gap-2 mb-2">
+                  {state.assignedUsers.map((assignee) => (
+                    <span
+                      key={assignee.userId}
+                      className="bg-gray-200 text-gray-700 rounded-full px-2 py-1 text-sm flex items-center"
+                    >
+                      {state.users.find((user) => user.id === assignee.userId)
+                        ?.name || assignee.userId}{" "}
+
+                      <button
+                        onClick={() => handleUnassignUser(assignee.userId)}
+                        className="ml-1 text-red-500 hover:text-red-700 focus:outline-none"
+                      >
+                        <FaTrash className="h-3 w-3" />
+                      </button>
+                    </span>
+                  ))}
+                </div>
+                <select
+                  className="w-full p-2 border border-gray-300 rounded"
+                  onChange={(e) => {
+                    const selectedUserId = e.target.value;
+                    if (
+                      selectedUserId &&
+                      !state.assignedUsers.some(
+                        (au) => au.userId === selectedUserId
+                      )
+                    ) {
+                      handleAssignUser(selectedUserId);
+                      e.target.value = ""; // Reset the select
+                    }
+                  }}
+                  defaultValue=""
+                >
+                  <option value="" disabled>
+                    Select a user to assign
+                  </option>
+                  {state.users.map((user) => (
+                    <option key={user.id} value={user.id}>
+                      {user.name || user.id}{" "}
+
+                    </option>
+                  ))}
+                </select>
+              </div> */}
 
               {/* Buttons container */}
               <div className="flex justify-between mt-4">
