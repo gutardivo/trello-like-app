@@ -7,7 +7,7 @@ async function get(id) {
 
 async function getUsers(todo_id) {
   const results = await knex("todos_assignees").where({ todo_id });
-  return results[0];
+  return results;
 }
 
 async function create(user_id, todo_id) {

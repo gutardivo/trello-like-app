@@ -16,6 +16,7 @@ const initialState = {
   response: [],
   user: null,
   users: [],
+  assignedUsers: [],
   showModal: false,
   showDeleteModal: false,
   showEditModal: false,
@@ -86,7 +87,7 @@ export default function DashboardPage() {
     });
 
     fetchTodos();
-    // fetchUsers();
+    fetchUsers();
 
     return () => {
       if (unsubscribe) {
@@ -115,7 +116,7 @@ export default function DashboardPage() {
       }
       if (response.ok) {
         const data = await response.json();
-        dispatch({ type: "SET_USERS", payload: data });
+        dispatch({ type: "SET_USERS", payload: data.allUsers });
       } else {
         toast.error("Failed to fetch users.");
       }
@@ -171,7 +172,8 @@ export default function DashboardPage() {
           const response = await fetch(`/todos/${todoId}/assignees`); // Replace with your actual endpoint to get assignees for a todo
           if (response.ok) {
             const data = await response.json();
-            dispatch({ type: "SET_ASSIGNED_USERS", payload: data });
+
+            dispatch({ type: "SET_ASSIGNED_USERS", payload: data.users });
           } else {
             toast.error("Failed to fetch assigned users.");
           }
@@ -184,7 +186,7 @@ export default function DashboardPage() {
       }
     };
 
-    // fetchAssignedUsers();
+    fetchAssignedUsers();
   }, [state.showEditModal, state.todoToEdit]);
 
   const handleAssignUser = async (userId) => {
@@ -200,9 +202,11 @@ export default function DashboardPage() {
       });
       if (response.status === 201) {
         toast.success("User assigned successfully!");
+
+        const newUser = { user_id: userId, todo_id: todoId };
         dispatch({
           type: "SET_ASSIGNED_USERS",
-          payload: { ...state.assignedUsers, userId },
+          payload: [...state.assignedUsers, newUser],
         });
       } else {
         const errorData = await response.json();
@@ -226,7 +230,7 @@ export default function DashboardPage() {
         dispatch({
           type: "SET_ASSIGNED_USERS",
           payload: state.assignedUsers.filter(
-            (assignee) => assignee.userId !== userId
+            (assignee) => assignee.user_id !== userId
           ),
         });
       } else {
@@ -485,20 +489,18 @@ export default function DashboardPage() {
                 </button>
               </form>
 
-              {/* Will continue tomorrow (27/03/2025) */}
-              {/* <div className="mt-4">
+              <div className="mt-4">
                 <h4 className="text-lg font-semibold mb-2">Assign Users</h4>
                 <div className="flex flex-wrap gap-2 mb-2">
                   {state.assignedUsers.map((assignee) => (
                     <span
-                      key={assignee.userId}
+                      key={assignee.id}
                       className="bg-gray-200 text-gray-700 rounded-full px-2 py-1 text-sm flex items-center"
                     >
-                      {state.users.find((user) => user.id === assignee.userId)
-                        ?.name || assignee.userId}{" "}
-
+                      {state.users.find((user) => user.id === assignee.user_id)
+                        ?.name || assignee.user_id}{" "}
                       <button
-                        onClick={() => handleUnassignUser(assignee.userId)}
+                        onClick={() => handleUnassignUser(assignee.user_id)}
                         className="ml-1 text-red-500 hover:text-red-700 focus:outline-none"
                       >
                         <FaTrash className="h-3 w-3" />
@@ -525,14 +527,14 @@ export default function DashboardPage() {
                   <option value="" disabled>
                     Select a user to assign
                   </option>
-                  {state.users.map((user) => (
-                    <option key={user.id} value={user.id}>
-                      {user.name || user.id}{" "}
-
-                    </option>
-                  ))}
+                  {state.users &&
+                    state.users.map((user) => (
+                      <option key={user.id} value={user.id}>
+                        {user.name} {user.id}{" "}
+                      </option>
+                    ))}
                 </select>
-              </div> */}
+              </div>
 
               {/* Buttons container */}
               <div className="flex justify-between mt-4">

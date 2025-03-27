@@ -72,7 +72,8 @@ async function createUser(req, res) {
 }
 
 async function getAssignedUsers(req, res) {
-  const users = await todosAssignees.get(req.params.todo_id);
+  const users = await todosAssignees.getUsers(req.params.todo_id);
+
   return res.status(201).json({ users });
 }
 
